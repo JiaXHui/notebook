@@ -1,0 +1,654 @@
+# Thymeleaf
+
+
+
+Thymeleaf 是一个 Java 类库，它是一个 xml/xhtml/html5 的模板引擎，可以作为 MVC 的 Web
+应用的 View 层。Thymeleaf 还提供了额外的模块与 Spring MVC 集成，因此我们可以使用
+Thymeleaf 完全替代 JSP。Thymeleaf 是面向 Web 和独立环境的现代服务器端 Java 模板引擎。
+Thymeleaf 的主要目标是为您的开发工作流程带来优雅的自然模板,可以在浏览器中正确显
+示 HTML，还可以作为静态原型工作，从而在开发团队中进行更强大的协作。使用 Spring
+Framework 的模块，与您最喜爱的工具进行大量集成，以及插入自己的功能的能力，Thymeleaf
+是现代 HTML5 JVM Web 开发的理想选择。
+
+
+
+## Thymeleaf集成
+
+Thymeleaf 模板是 SpringBoot 官方推荐的模板引擎，下面我们就带领大家来体验使用。
+
+
+
+（1 ） 、修改 maven 依赖，增加 Thymeleaf 所需依赖
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+```
+
+
+
+（2 ） 、修改 application.yml 增加 Thymeleaf 相关配置
+
+```yaml
+spring:
+    #开始 thymeleaf 设置
+    thymeleaf:
+        #禁用模板缓存
+        cache: false
+```
+
+
+
+（3 ） 、编写 Controller 文件
+
+```java
+package com.offcn.demo.controller;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+@Controller
+public class FirstThymeleafController {
+/**
+* 访问 http://localhost:8080/first
+* 将数据 message 填充到 templates/index.html
+* @param model
+* @return
+*/
+@GetMapping("/first")
+public String indexPage(Model model) {
+    String message = "Hello, Thymeleaf!";
+    model.addAttribute("message", message);
+    return "index";
+	}
+}
+```
+
+
+
+（4 ） 、编写模板文件
+
+```html
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	<xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>首页</title>
+    </head>
+    <body>
+    	<h1 th:text="${message}"></h1>
+    </body>
+</html>
+```
+
+
+
+（5 ）、[运行访问地址](http://localhost:8080/first)
+
+
+
+##  Thymeleaf 常量文字读取
+
+（1）、修改 application.yml，增加国际化消息属性设置
+
+```yaml
+spring：
+  #设置文字消息
+  messages:
+    encoding: UTF-8
+      basename: message_zh_CN
+```
+
+
+
+（2）、增加中文消息设置属性文件 message_zh_CN.properties 【注意文件编码是 UTF-8 】
+
+```properties
+title= 这是标题
+message1= 这是消息 2
+message2= 这是消息 2
+```
+
+
+
+（3 ）、编写模板文件
+在 resource/templates 下编辑 index.html
+
+```html
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head>
+    <meta charset="UTF-8">
+    	<title th:text="#{title}"></title>
+    </head>
+    <body>
+        <h1 th:text="${message}"></h1>
+        北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+    </body>
+</html>
+```
+
+
+
+（4 ）、[访问运行地址 ](http://localhost:8080/java003/first) ，测试结果如下
+
+
+
+## Thymeleaf 打印对象属性
+
+（1）、新建一个实体 bean User，内容如下：
+
+```java
+package com.offcn.demo.bean;
+
+@Data
+public class User {
+    private Integer id;
+    private String name;
+    private int age;
+}
+```
+
+
+
+（2）、新建一个 Controller，内容如下：
+
+```java
+package com.offcn.demo.controller;
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import com.offcn.demo.bean.User;
+
+@Controller
+public class SecondThymeleafController {
+    /**
+    * 访问 localhost:8080 页面
+    * 将数据 message 填充到 templates/index2.html
+    * @param model
+    * @return
+    */
+    @GetMapping("/second")
+    public String indexPage(Model model) {
+        String message = "Hello, Thymeleaf!";
+        User u = new User();
+        北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+        u.setId(1);
+        u.setName("优就业");
+        u.setAge(18);
+        Map<String,Object> map=new HashMap<>();
+        map.put("src1","1.jpg");
+        map.put("src2","2.jpg");
+        model.addAttribute("message", message);
+        model.addAttribute("user", u);
+        model.addAttribute("src", map);
+   	    return "index2";
+	}
+}
+```
+
+
+
+（3）、在 resource/templates 下,新增模板文件 index2.html
+
+```html
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head>
+    <meta charset="UTF-8">
+        北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+        <title>首页</title>
+    </head>
+    <body>
+        <h1 th:text="${message}"></h1>
+        <img th:src="${src.src1}"/>
+        </br>
+        <img th:src="${src.src2}"/>
+        </br>
+        <span th:text="${user.id}"></span>
+        <span th:text="${user.name}"></span>
+        <span th:text="${user.age}"></span>
+    </body>
+</html>
+```
+
+
+
+（4）、[访问地址：](http://localhost:8080/second)运行结果如下
+
+
+
+## Thymeleaf 循环遍历集合
+
+（1）、新建一个 Controller，内容如下：
+
+```java
+package com.offcn.demo.controller;
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import com.offcn.demo.bean.User;
+北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+@Controller
+public class ThreeThymeleafController {
+    /**
+    * 访问 localhost:8080/java003 页面
+    * 将数据 message 填充到 templates/index3.html
+    * @param model
+    * @return
+    */
+    @GetMapping("/three")
+    public String indexPage(Model model) {
+        List<User> list=new ArrayList<User>();
+        User u1 = new User();
+        u1.setId(1);
+        u1.setName("优就业");
+        u1.setAge(18);
+        list.add(u1);
+        User u2 = new User();
+        u2.setId(2);
+        u2.setName("中公教育");
+        u2.setAge(28);
+        北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+        list.add(u2);
+        User u3 = new User();
+        u3.setId(3);
+        u3.setName("IT 先锋");
+        u3.setAge(88);
+        list.add(u3);
+        User u4 = new User();
+        u4.setId(4);
+        u4.setName("JAVA 第一");
+        u4.setAge(888);
+        list.add(u4);
+        model.addAttribute("userList", list);
+        return "index3";
+    }
+}
+```
+
+(2) 、在 resource/templates 下,新增模板文件 index3.html
+
+```html
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+    <head>
+        <meta charset="UTF-8">
+        <title>首页</title>
+    </head>
+    <body>
+        <table width="200" style="text-align: center;">
+            <tr>
+                <th>编号</th>
+                <th>姓名</th>
+                <th>年龄</th>
+                <th>index</th>
+            </tr>
+            <tr th:each="user,iterStat : ${userList}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.age}"></td>
+                <td th:text="${iterStat.index}">index</td>
+            </tr>
+        </table>
+    </body>
+</html>
+```
+
+**iterStat,称作转态变量,属性有:**
+
+index：当前迭代对象的 index（从 0 开始计算）
+count：当前迭代对象的 index（从 1 开始计算）
+size：被迭代对象的大小
+current：当前迭代变量
+even/odd：布尔值，当前循环是否是偶数/奇数（从 0 开始计算）
+first：布尔值，当前循环是否是第一个
+last：布尔值，当前循环是否是最后一个
+
+
+
+(3)、[访问地址：](http://localhost:8080/java003/three) 运行结果如下
+
+
+
+##  Thymeleaf 赋值、字符串拼接
+
+（1）、新建一个 Controller，内容如下：
+
+```java
+package com.offcn.demo.controller;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class FourThymeleafController {
+    /**
+    * 访问 localhost:8080/java003 页面
+    * 将数据 message 填充到 templates/index4.html
+    * @param model
+    * @return
+    */
+    @GetMapping("/four")
+    public String indexPage(Model model) {
+        model.addAttribute("userName", "优就业");
+        model.addAttribute("href", "http://www.ujiuye.com");
+        return "index4";
+    }
+}
+```
+
+
+
+（2）、在 resource/templates 下,新增模板文件 index4.html
+
+```html
+<!doctype html>
+北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>首页</title>
+    </head>
+    <body>
+        <!-- 给标签赋值 th:text -->
+        <h1 th:text="${userName}"></h1>
+        <!-- 给属性赋值 th:value、th:属性名称 -->
+        <input type="text" name="names" th:value="${userName}"/>
+        </br>
+        <em th:size="${userName}"></em>
+        <!-- 字符串拼接 -->
+        <span th:text="' 欢迎来 :'+${userName}+' 学习 !'"></span>
+        </br>
+        <!-- 字符串拼接,方式 2 -->
+        <span th:text="| 欢迎来 :${userName} 学习 !|"></span>
+    </body>
+</html>
+```
+
+
+
+（3）、[访问地址：](http://localhost:8080/four) 运行结果如下
+
+
+
+## Thymeleaf 条件判断,选择语句
+
+（1）、新建一个 Controller，内容如下：
+
+```java
+package com.offcn.demo.controller;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+@Controller
+public class FiveThymeleafController {
+    /**
+    * 访问 localhost:8080/ 页面
+    * 将数据 message 填充到 templates/index4.html
+    * @param model
+    * @return
+    北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+    */
+    @GetMapping("/five")
+    public String indexPage(Model model) {
+        model.addAttribute("flag", "yes");
+        model.addAttribute("menu", "admin");
+        model.addAttribute("manager", "manager");
+        return "index5";
+    }
+}
+```
+
+
+
+（2）、在 resource/templates 下,新增模板文件 index5.html
+
+```html
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>首页</title>
+    </head>
+    <body>
+        <!-- th:if 条件成立就显示 -->
+        <h1 th:if="${flag=='yes'}" >中公教育</h1>
+        北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+        <!-- th:unless 条件不成立就显示 -->
+        <h1 th:unless="${flag=='no'}" >优就业</h1>
+        <!-- switch 选择语句 -->
+        <div th:switch="${menu}">
+        <p th:case="'admin'">User is an administrator</p>
+        <p th:case="${manager}">User is a manager</p>
+    </body>
+</html>
+```
+
+
+
+（3）、[访问地址：](http://localhost:8080/five )运行结果如下
+
+
+
+## Thymeleaf 静态资源加载
+
+我们知道一个网页中加载的静态文件通常有一个十分尴尬的问题，比如对于 bootstrap.css，
+就是如果我们能让 IDE 识别这个文件，那么我们得用相对路径来引入这个文件。这样我们的
+IDE 才能加载到这个文件，并且给予我们相应的提示。但是如果我们想要在发布后服务器能
+够加载这个文件，我们就必须用相对于 resources 或者 static 的位置来引入静态文件。显然，
+一般情况下我们不能兼顾这两个问题，只能要么在编写的时候用相对自己的路径，然后在发
+布的时候用相对于项目资源文件夹的路径，要么就只能放弃 IDE 的提示，非常尴尬。
+
+而在 Thymeleaf 中，我们可很好的处理这一点。在引入资源的时候，我们可以写类似下面的
+代码:
+
+```html
+<link rel="stylesheet" type="text/css" media="all" href="../../css/gtvg.css"
+th:href="@{/css/gtvg.css}" />
+```
+
+当我们在没有后台渲染的情况下，浏览器会认得 href，但是不认得 th:href，这样它就会选择
+以相对与本文件的相对路径去加载静态文件。而且我们的 IDE 也能识别这样的加载方式，从
+而给我们提示。
+
+
+
+```html
+<link rel="stylesheet" type="text/css" media="all" href="/css/gtvg.css" />
+```
+
+
+
+原来的 href 标签会被替换成相对于项目的路径，因此服务器就能找到正确的资源，从而正
+确渲染。
+非常的智能而且方便。
+这里需要注意到所有的路径我们是用”@{}”来引用，而不是”${}”，因为后者是用来引用
+变量名的，而前者是引用路径的，因此我们在这里用的是前者。可是如果我们是把路径写在
+变量里，那么就要用后者来引用了
+
+
+
+## Thymeleaf 片段 fragment 定义使用
+
+thymeleaf 也提供了类似 import 的东西，可以将很多代码块抽象成模块，然后在需要的时候
+引用，非常方便。
+fragment 介绍
+fragment 类似于 JSP 的 tag，在 html 中文件中，可以将多个地方出现的元素块用 fragment
+包起来使用。
+fragment 使用
+定义 fragment
+北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+所有的 fragment 可以写在一个文件里面，也可以单独存在，例如：
+
+
+
+（1）、在 resource/templates 下,新增模板文件 footer.html
+
+```html
+<body>
+    <h1 th:fragment="copy">
+    &copy; 1999-2018 Offcn.All Rights Reserved
+    </h1>
+</body>
+```
+
+在 Springboot 中，默认读取 thymeleaf 文件的路径是：src/main/resource/templates
+
+
+
+（2）、编写 Controller
+
+```java
+package com.offcn.demo.controller;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+@Controller
+public class SixThymeleafController {
+    /**
+    * 访问 localhost:8080/java003 页面
+    * 将数据 message 填充到 templates/index6.html
+    * @param model
+    * @return
+    */
+    北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+    @GetMapping("/six")
+    public String indexPage(Model model) {
+    	return "index6";
+    }
+}
+```
+
+
+
+（3）、在 resource/templates 下,新增视图文件 index6.html
+
+```html
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>首页</title>
+    </head>
+    <body>
+        <!-- 把片段的内容插入到当前位置 -->
+        <div th:insert="~{footer :: copy}"></div>
+        </br>
+        <!-- 使用片段的内容替换当前标签 -->
+        北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+        <div th:replace="~{footer :: copy}"></div>
+        </br>
+        <!-- 保留自己的主标签，不要片段的主标签 -->
+        <div th:include="~{footer :: copy}"></div>
+    </body>
+</html>
+```
+
+fragment 的引用
+th:insert:保留自己的主标签，保留 th:fragment 的主标签。
+th:replace:不要自己的主标签，保留 th:fragment 的主标签。
+th:include:保留自己的主标签，不要 th:fragment 的主标签。（官方 3.0 后不推荐）
+
+
+
+（4）、[访问地址:](http://localhost:8080/six )运行
+
+
+
+##  Thymeleaf 表达式内置对象使用
+
+（1 ）、常见内置工具对象如下：
+
+#dates 与 java.util.Date 对象的方法对应，格式化、日期组件抽取等等
+#numbers 格式化数字对象的工具方法
+#strings 与 java.lang.String 对应的工具方法
+
+
+
+（2）、编写 Controller
+
+```java
+package com.offcn.demo.controller;
+北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+import java.util.Date;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+@Controller
+public class SevenThymeleafController {
+    /**
+    * 访问 localhost:8080/java003 页面
+    * 将数据 message 填充到 templates/index7.html
+    * @param model
+    * @return
+    */
+    @GetMapping("/seven")
+    public String indexPage(Model model) {
+        //日期时间
+        Date date = new Date();
+        model.addAttribute("date", date);
+        //小数的金额
+        double price=128.5678D;
+        北京海淀区学清路 23 号汉华世纪大厦 B 座 电话：400-650-7353
+        model.addAttribute("price", price);
+        //定义大文本数据
+        String str="Thymeleaf 是 Web 和独立环境的现代服务器端 Java 模板引擎，能够处理
+        HTML，XML，JavaScript，CSS 甚至纯文本。\r\n" +
+        "Thymeleaf 的主要目标是提供一种优雅和高度可维护的创建模板的方式。为了
+        实现这一点，它建立在自然模板的概念上，将其逻辑注入到模板文件中，不会影响模板被用作设
+        计原型。这改善了设计的沟通，弥补了设计和开发团队之间的差距。\r\n" +
+        "Thymeleaf 也从一开始就设计了 Web 标准 - 特别是 HTML5 - 允许您创建完全
+        验证的模板，如果这是您需要的\r\n" ;
+        model.addAttribute("strText", str);
+        //定义字符串
+        String str2="JAVA-offcn";
+        model.addAttribute("str2", str2);
+        return "index7";
+    }
+}
+```
+
+
+
+（3）、resource/templates 下,新增模板文件 index7.html
+
+```html
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>首页</title>
+    </head>
+    <body>
+        时间：<span th:text="${#dates.format(date,'yyyy-MM-dd
+        HH:mm:ss')}">4564546</span></br>
+        金额：<span th:text="' ￥ '+${#numbers.formatDecimal(price, 1, 2)}">180</span>
+        </br>
+        <!-- # 这里的含义是 如果 atc.text 这个变量多余 200 个字符，后面显示... -->
+        <p th:text="${#strings.abbreviate(strText,60)}">内容内容内容</p>
+        <!-- 判断字符串是否为空 -->
+        <span th:if="${!#strings.isEmpty(str2)}">字符串 str2 不为空</span></br>
+        <!-- 截取字符串，指定长度 -->
+        <span th:text="${#strings.substring(str2,0,4)}">字符串 str2 的值</span>
+    </body>
+</html>
+```
+
+
+
+（4）、[运行访问地址 ](http://localhost:8080/java003/seven )效果如下

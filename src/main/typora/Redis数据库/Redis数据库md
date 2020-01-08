@@ -1,0 +1,341 @@
+# Redis数据库 
+
+
+
+## String类型数据指令
+
+Set key名字 value值 \\设置单一键值对(key值相同会覆盖原来的值,类似于map集合)
+
+Get key名字  \\获取指定key的值
+
+Del key名字 \\删除指定名称 key
+
+Append key名字 新值  \\在原有的值的基础上添加新的值
+
+Strlen key名字 \\获取字符串的长度
+
+ 
+
+(value值必须是数字)
+
+Incr(value值自动加1) ： incr key名字； 
+
+decr(value值自动减1) ：decr key名字； 
+
+incrby 递增值： incrby key名字 数字； 
+
+decrby 递减值：decrby key名字 数字;
+
+ 
+
+Getrange : GETRANGE key start end  \\获取value值的一部分
+
+Setrange ：SETRANGE key 起始位置 值 \\从起始位置开始替换值
+
+ 
+
+Setex: SETEX key名字 存活时间 值 \\设定一组值同时设定存活时间；
+
+Setnx: SETNX key名字 值 \\设置永久存活的一组值。(key值冲突无法存入值--返回值为0)
+
+ 
+
+Mset: mset key 值 key 值....  \\一次设定多组值，如果key值存在也会覆盖
+
+Mget: mget key key  \\一次获取多个key的值
+
+Msetnx: mset key 值 key 值....   \\一次设定多组key值，如果有key值存在无法添加完成
+
+
+
+## List类型(添加 删除内容)
+
+Lpush: lpush 集合的名字 值 \\向集合中添加内容,显示的顺序和添加的顺序相反。 
+
+Rpush: rpush 集合的名字 值 \\向集合中添加内容,添加顺序就是显示顺序。 
+
+Lrange 集合的名字 起始位置 结束位置(-1代表到集合的末尾) \\获取集合中的数据
+
+Llen: llen 集合的名字   \\查看集合的长度
+
+Lpop:  lpop 集合的名称 \\移除集合中的第一个元素 
+
+Rpop: rop 集合的名称  \\移除集合中的最后一个元素 
+
+lindex : lindex 集合的名称 索引数值 (下标从0开始) \\获取指定索引的值  
+
+Lrem : lrem 集合的名称 个数 值(集合中有重复值)； \\删除指定数量的值
+
+
+
+## Set集合
+
+Sadd：sadd 集合名称 值....  \\添加值 
+
+Smembers：smembers 集合名称 \\查看值 
+
+Scard : scard 集合名称  \\集合中元素个数 
+
+Srem : srem 集合名称 值； \\删除集合中的某几个值 
+
+SPOP: spop 集合名称 [count] \\随机从集合中移除几个数据  
+
+Smove: SMOVE 集合1 集合2 值；\\将集合中的某个值转移到另外一个集合： 
+
+Sdiff: 差集
+
+Sinter:交集
+
+Sunion:并集
+
+
+
+## Hash集合
+
+redis hash是一个键值对的集合， 是一个string类型的field和value的映射表，适合用于存储对象(key value(key,value))。
+
+Hset:存放一组键值对 \\hset key 值的名称 具体的值；（重复添加会覆盖原来的值） 
+
+Hget：获取一个值  \\hget key 值的名称
+
+Hmset： 设定多组键值对 \\HMSET customer id 1 name zs address beijing
+
+Hmget： 获取过个键对应的值 \\hmget customer id name address
+
+Hgetall： 获取所有的数据  \\hgetall key值；
+
+Hdel: 删除某个指定的key的一组value \\hdel customer id
+
+Hlen: 当前的key 有几组对应的键值对
+
+Hexists: 判断当前key中是否有指定名称的键值对： \\hexists customer id;
+
+Hkeys：获取所有的key
+
+Hvals: 获取所有的值
+
+Hincrby: 增加指定步长的数据 \\hincrby customer age 2;
+
+Hincrbyfloat: 在原有的基础上增加指定的小数。 \\hincrbyfloat customer course 0.5
+
+Hsetnx： 如果value中的key重复不能添加到集合中。
+
+
+
+## Zset
+
+zset（sorted set 有序集合） 是string类型的有序集合，也不可重复。sorted set中的每个元素都需要指定一个分数，根据分数对元素进行升序排序，如果多个元素有相同的分数，则以字典序进行升序排序，sorted set 因此非常适合实现排名。
+
+**常用命令：**
+
+Zadd：创建集合并设定标准 
+
+案例：zadd zset01 60 v1 70 v2 80 v3 90 v4 100 v5（等级划分的数据）
+
+ 
+
+Zrange: 查询所有的标准 
+
+案例：zrange zset01 0 -1 , ZRANGE zset01 0 -1 withscores
+
+ 
+
+ZRANGEBYSCORE :根据分数查询内容 
+
+语法：zrangebyscore zset01 60 90 (注意如果前面添加”(” 表示不包含节点的意思) withscores limit 起始位置 数量.
+
+
+
+Zrem :删除元素   //语法：zrem key 等级。
+
+Zcard: 统计有几个键值对   //语法：zcard 集合
+
+Zcount: zcount 集合 数值1 数值2    //语法：统计区间的值
+
+Zrank : 统计对应的下标   //语法：zrank 集合名 values
+
+Zscore : zscore 集合名   //语法：values 获取对应的分数
+
+
+
+## Key指令的的使用
+
+常用指令：key
+
+Keys *：指令  查看当前这个库中所有的key值
+
+exists key名字: 判断某个key值是否存在 0表示不存在 1表示存在
+
+move key名字 数据库的索引下标： 将某个值移除到指定的库中
+
+Redis默认有16个库(0-15)，我们可以通过修改redis配置文件redis.conf来改变库的数量
+
+Select 下标可以切换不同的数据库： select 下标
+
+expire key名字 秒：设定指定的key的存活时间
+
+ttl key名字:查看当前的key还有多少存活时间 -1 表示永不过期，-2表示已经过期
+
+type  key名字: 查看当前key的类型（key String,Object）
+
+ 
+
+## Java连接Redis
+
+
+
+1.设置linux对外开发6379端口
+
+
+
+2.创建maven项目，添加依赖包
+
+```xml
+
+```
+
+
+
+3.测试:
+
+```java
+public class MyRedisConn {
+   public static void main(String[] args) {
+	   //获取jedis对象
+	   //Jedis j=new Jedis("192.168.205.130", 6379);
+	   
+	   //获取jedis的连接池
+	   JedisPool jp=new JedisPool("192.168.205.130", 6379);
+	   //通过jedis的连接池获取jedis连接
+	   Jedis j = jp.getResource();
+	   j.auth("123");
+	   
+	   //String类型
+	   //j.set("proname", "dsjdfkkldsf");
+//	   String kv = j.get("proname");
+//	   System.out.println(kv);
+	   
+	   //List类型
+//	   j.lpush("l1", "11","12","13","14");
+//	   List<String> list1 = j.lrange("l1", 0, -1);
+//	   System.out.println(list1);
+	   
+	   
+	   //set类型
+//	   j.sadd("s1", "11","12","13","14","11");
+//	   Set<String> set = j.smembers("s1");
+//	   System.out.println(set);
+	   
+	   
+	   //Hash类型
+//	   Map<String, String> map=new HashMap<String, String>();
+//	   map.put("mid", "12");
+//	   map.put("mname", "dsfsd");
+//	   map.put("age", "18");
+//	   j.hmset("h1", map);
+//	   List<String> vls = j.hmget("h1", "mid","mname","age");
+//	   System.out.println(vls);
+	   
+	   
+	   //zset类型
+//	   Map<String, Double> map=new HashMap<String, Double>();
+//	   map.put("v1", 60d);
+//	   map.put("v2", 70d);
+//	   map.put("v3", 80d);
+//	   j.zadd("zset1", map);
+	   
+	   Set<String> zs = j.zrange("zset1", 0, -1);
+	   System.out.println(zs);
+	   
+	   
+	   j.close();
+	   jp.close();
+   }
+}
+```
+
+
+
+## Redis操作java对象
+
+对象和字节数组转换工具类：
+
+```java
+public class SerUitls {
+
+	//对象----->字节数组
+	public static byte[] serObj(Object obj) {
+		ByteArrayOutputStream bos=new ByteArrayOutputStream();
+		try {
+			ObjectOutputStream oos=new ObjectOutputStream(bos);
+			oos.writeObject(obj);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return bos.toByteArray();
+	}
+	
+	//字节数组------>对象
+	public  static Object deSerObj(byte[] bs) {
+		ByteArrayInputStream bis=new ByteArrayInputStream(bs);
+		try {
+			ObjectInputStream ois=new ObjectInputStream(bis);
+			return ois.readObject();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+}
+```
+
+## Spring完成Jedis连接池的实例化
+
+1.添加spring的依赖包
+
+2.编写beans.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd">
+
+   <!--实例化jedis连接池的配置项实例  -->
+   <bean id="pc" class="redis.clients.jedis.JedisPoolConfig">
+      <property name="maxTotal" value="30"></property>
+      <property name="MaxIdle" value="10"></property>
+   </bean>
+   <!-- 实例化jedis的连接池 -->
+   <bean id="jp" class="redis.clients.jedis.JedisPool">
+      <constructor-arg name="poolConfig" ref="pc"></constructor-arg>
+      <constructor-arg name="host" value="192.168.205.130"></constructor-arg>
+      <constructor-arg name="port" value="6379"></constructor-arg>
+      <constructor-arg name="timeout" value="60000"></constructor-arg>
+      <constructor-arg name="password" value="123"></constructor-arg>
+      <constructor-arg name="database" value="0"></constructor-arg>
+   </bean>
+	
+</beans>
+```
+
+3.测试:
+
+```java
+ApplicationContext ap=new ClassPathXmlApplicationContext("beans.xml");
+JedisPool jp=(JedisPool) ap.getBean("jp");
+//jedis的连接池获取jedis连接
+Jedis j = jp.getResource();
+byte[] bs = j.get("11".getBytes());//从redis中获取对象
+User getUser=(User) SerUitls.deSerObj(bs);
+System.out.println(getUser);
+```
+
